@@ -1,0 +1,21 @@
+bundle:
+  name: simple-dataeng-job
+
+resources:
+  jobs:
+    simple-dataeng-job:
+      name: simple-dataeng-job
+      tasks:
+        - task_key: run_main
+          description: Run the main data engineering script
+          spark_python_task:
+            python_file: ./src/main.py
+          environment_key: Default
+      environments:
+        - environment_key: Default
+          spec:
+            client: "2"
+
+targets:
+  dev:
+    default: true

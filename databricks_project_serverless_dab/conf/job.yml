@@ -1,0 +1,15 @@
+name: simple-dataeng-job
+
+tasks:
+  - task_key: run_main
+    description: Run the main data engineering script
+    python_wheel_task:
+      entry_point: main
+    python_file: ../src/main.py
+    new_cluster:
+      spark_version: 13.3.x-scala2.12
+      node_type_id: Standard_DS3_v2
+      num_workers: 1
+    libraries:
+      - pypi:
+          package: pandas 

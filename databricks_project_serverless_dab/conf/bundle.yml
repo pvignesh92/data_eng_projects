@@ -1,0 +1,7 @@
+bundle:
+  name: simple-dataeng-job
+  description: A simple Databricks data engineering job using asset bundles
+
+resources:
+  jobs:
+    - file: job.yml 
