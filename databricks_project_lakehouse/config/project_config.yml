@@ -1,0 +1,48 @@
+# Databricks Lakehouse Project Configuration
+
+# Source data configuration
+source_data:
+  format: "csv"
+  path: "s3://dbx-data-source-files/lakehouse_project/"
+
+# Data paths for different layers
+paths:
+  bronze: "s3://dbx-target-filesystem/bronze"
+  silver: "s3://dbx-target-filesystem/silver"
+  gold: "s3://dbx-target-filesystem/gold"
+  checkpoint_bronze: "/Volumes/lakehouse_project/bronze/metadata_files"
+  schema_location_bronze: "/Volumes/lakehouse_project/bronze/schemas"
+
+# Auto Loader configuration
+auto_loader:
+  max_files_per_trigger: 1000
+  schema_evolution_mode: "additive"
+  clean_source: "archive"
+  source_archive_dir: "s3://dbx-data-source-files/archive/"
+
+# Delta table configuration
+delta:
+  auto_optimize_write: true
+  auto_optimize_compact: true
+  enable_change_data_feed: true
+
+# Data quality configuration
+data_quality:
+  enable_expectations: true
+  expectations:
+    - name: "not_null_check"
+      column: "id"
+      expectation: "not_null"
+    - name: "file_size_check"
+      expectation: "file_size"
+      min_size_mb: 0.1
+      max_size_mb: 100
+
+# Monitoring configuration
+monitoring:
+  enable_metrics: true
+  metrics:
+    - "files_processed"
+    - "records_processed"
+    - "processing_time_seconds"
+    - "error_count"

@@ -1,0 +1,126 @@
+{
+    "name": "lakehouse_bronze_wf",
+    "description": "Bronze Layer Ingestion Workflow",
+    "email_notifications": {
+      "no_alert_for_skipped_runs": false
+    },
+    "webhook_notifications": {},
+    "timeout_seconds": 3600,
+    "schedule": {
+      "quartz_cron_expression": "0 0 21 * * ?",
+      "timezone_id": "UTC",
+      "pause_status": "UNPAUSED"
+    },
+    "max_concurrent_runs": 5,
+    "tasks": [
+      {
+        "task_key": "load_customer_data",
+        "run_if": "ALL_SUCCESS",
+        "notebook_task": {
+          "notebook_path": "/Workspace/Users/vigneshdataworld@gmail.com/databricks_project_lakehouse/bronze/notebooks/01_ingest_raw_data.py",
+          "base_parameters": {
+            "source_path": "s3://dbx-data-source-files/lakehouse_project/customers/",
+            "target_path": "s3://dbx-target-filesystem/bronze/customers",
+            "table_name": "customers"
+          }, 
+          "source": "WORKSPACE"
+        },
+        "timeout_seconds": 0,
+        "email_notifications": {},
+        "webhook_notifications": {}
+      },
+      {
+        "task_key": "load_orders_data",
+        "run_if": "ALL_SUCCESS",
+        "notebook_task": {
+          "notebook_path": "/Workspace/Users/vigneshdataworld@gmail.com/databricks_project_lakehouse/bronze/notebooks/01_ingest_raw_data.py",
+          "base_parameters": {
+            "source_path": "s3://dbx-data-source-files/lakehouse_project/orders/",
+            "target_path": "s3://dbx-target-filesystem/bronze/orders",
+            "table_name": "orders"
+          },
+          "source": "WORKSPACE"
+        },
+        "timeout_seconds": 0,
+        "email_notifications": {},
+        "webhook_notifications": {}
+      },
+      {
+        "task_key": "load_order_items_data",
+        "run_if": "ALL_SUCCESS",
+        "notebook_task": {
+          "notebook_path": "/Workspace/Users/vigneshdataworld@gmail.com/databricks_project_lakehouse/bronze/notebooks/01_ingest_raw_data.py",
+          "base_parameters": {
+            "source_path": "s3://dbx-data-source-files/lakehouse_project/order_items/",
+            "target_path": "s3://dbx-target-filesystem/bronze/order_items",
+            "table_name": "order_items"
+          },
+          "source": "WORKSPACE"
+        },
+        "timeout_seconds": 0,
+        "email_notifications": {},
+        "webhook_notifications": {}
+      },
+      {
+        "task_key": "load_products_data",
+        "run_if": "ALL_SUCCESS",
+        "notebook_task": {
+          "notebook_path": "/Workspace/Users/vigneshdataworld@gmail.com/databricks_project_lakehouse/bronze/notebooks/01_ingest_raw_data.py",
+          "base_parameters": {
+            "source_path": "s3://dbx-data-source-files/lakehouse_project/products/",
+            "target_path": "s3://dbx-target-filesystem/bronze/products",
+            "table_name": "products"
+          },
+          "source": "WORKSPACE"
+        },
+        "timeout_seconds": 0,
+        "email_notifications": {},
+        "webhook_notifications": {}
+      },
+      {
+        "task_key": "load_product_reviews_data",
+        "run_if": "ALL_SUCCESS",
+        "notebook_task": {
+          "notebook_path": "/Workspace/Users/vigneshdataworld@gmail.com/databricks_project_lakehouse/bronze/notebooks/01_ingest_raw_data.py",
+          "base_parameters": {
+            "source_path": "s3://dbx-data-source-files/lakehouse_project/product_reviews/",
+            "target_path": "s3://dbx-target-filesystem/bronze/product_reviews",
+            "table_name": "product_reviews"
+          },
+          "source": "WORKSPACE"
+        },
+        "timeout_seconds": 0,
+        "email_notifications": {},
+        "webhook_notifications": {}
+      }
+    ],
+    "tags": {
+        "Project": "Lakehouse_Project",
+        "ResourceClass": "serverless"
+    },
+    "queue": {
+      "enabled": true
+    },
+    "parameters": [
+        {
+        "name": "catalog_name",
+        "default": "lakehouse_project"
+        },
+        {
+        "name": "schema_name",
+        "default": "bronze"
+        }
+  ],
+    "environments": [
+      {
+        "environment_key": "Default",
+        "spec": {
+          "client": "2"
+        }
+      }
+    ],
+    "performance_target": "STANDARD",
+    "run_as": {
+      "service_principal_name": "6134cc4f-5177-444a-90c8-9455b4b79cf1"
+    }
+  }
