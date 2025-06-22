@@ -1,0 +1,117 @@
+resources:
+  jobs:
+    lakehouse_bronze_incremental_load:
+      name: "lakehouse_bronze_incremental_load"
+      description: "Bronze Layer Incremental Load Workflow with Merge Operations"
+      email_notifications:
+        no_alert_for_skipped_runs: false
+      webhook_notifications: {}
+      timeout_seconds: 3600
+      schedule:
+        quartz_cron_expression: "33 0 21 * * ?"
+        timezone_id: "UTC"
+        pause_status: "UNPAUSED"
+      max_concurrent_runs: 3
+      tasks:
+        - task_key: load_customers_incremental
+          run_if: "ALL_SUCCESS"
+          notebook_task:
+            notebook_path: "../bronze/notebooks/bronze_incr_load.py"
+            base_parameters:
+              source_path: "s3://dbx-data-source-files/lakehouse_project/customers/"
+              table_name: "customers"
+              catalog_name: "lakehouse_project"
+              schema_name: "bronze"
+              primary_key: "customer_id"
+              job_id: "{{job_id}}"
+              job_run_id: "{{job_run_id}}"
+            source: "WORKSPACE"
+          timeout_seconds: 0
+          email_notifications: {}
+          webhook_notifications: {}
+
+        - task_key: load_orders_incremental
+          run_if: "ALL_SUCCESS"
+          notebook_task:
+            notebook_path: "../bronze/notebooks/bronze_incr_load.py"
+            base_parameters:
+              source_path: "s3://dbx-data-source-files/lakehouse_project/orders/"
+              table_name: "orders"
+              catalog_name: "lakehouse_project"
+              schema_name: "bronze"
+              primary_key: "order_id"
+              job_id: "{{job_id}}"
+              job_run_id: "{{job_run_id}}"
+            source: "WORKSPACE"
+          timeout_seconds: 0
+          email_notifications: {}
+          webhook_notifications: {}
+
+        - task_key: load_order_items_incremental
+          run_if: "ALL_SUCCESS"
+          notebook_task:
+            notebook_path: "../bronze/notebooks/bronze_incr_load.py"
+            base_parameters:
+              source_path: "s3://dbx-data-source-files/lakehouse_project/order_items/"
+              table_name: "order_items"
+              catalog_name: "lakehouse_project"
+              schema_name: "bronze"
+              primary_key: "order_item_id"
+              job_id: "{{job_id}}"
+              job_run_id: "{{job_run_id}}"
+            source: "WORKSPACE"
+          timeout_seconds: 0
+          email_notifications: {}
+          webhook_notifications: {}
+
+        - task_key: load_products_incremental
+          run_if: "ALL_SUCCESS"
+          notebook_task:
+            notebook_path: "../bronze/notebooks/bronze_incr_load.py"
+            base_parameters:
+              source_path: "s3://dbx-data-source-files/lakehouse_project/products/"
+              table_name: "products"
+              catalog_name: "lakehouse_project"
+              schema_name: "bronze"
+              primary_key: "product_id"
+              job_id: "{{job_id}}"
+              job_run_id: "{{job_run_id}}"
+            source: "WORKSPACE"
+          timeout_seconds: 0
+          email_notifications: {}
+          webhook_notifications: {}
+
+        - task_key: load_product_reviews_incremental
+          run_if: "ALL_SUCCESS"
+          notebook_task:
+            notebook_path: "../bronze/notebooks/bronze_incr_load.py"
+            base_parameters:
+              source_path: "s3://dbx-data-source-files/lakehouse_project/product_reviews/"
+              table_name: "product_reviews"
+              catalog_name: "lakehouse_project"
+              schema_name: "bronze"
+              primary_key: "review_id"
+              job_id: "{{job_id}}"
+              job_run_id: "{{job_run_id}}"
+            source: "WORKSPACE"
+          timeout_seconds: 0
+          email_notifications: {}
+          webhook_notifications: {}
+
+      tags:
+        Project: "Lakehouse_Project"
+        ResourceClass: "serverless"
+        LoadType: "incremental"
+      queue:
+        enabled: true
+      parameters:
+        - name: catalog_name
+          default: "lakehouse_project"
+        - name: schema_name
+          default: "bronze"
+      environments:
+        - environment_key: "Default"
+          spec:
+            client: "2"
+      run_as:
+        service_principal_name: "6134cc4f-5177-444a-90c8-9455b4b79cf1" 

@@ -1,0 +1,102 @@
+resources:
+  jobs:
+    lakehouse_bronze_full_load:
+      name: "lakehouse_bronze_full_load"
+      description: "Bronze Layer Full Load Workflow"
+      email_notifications:
+        no_alert_for_skipped_runs: false
+      webhook_notifications: {}
+      timeout_seconds: 3600
+      schedule:
+        quartz_cron_expression: "33 0 21 * * ?"
+        timezone_id: "UTC"
+        pause_status: "UNPAUSED"
+      max_concurrent_runs: 5
+      tasks:
+        - task_key: load_customer_data_full
+          run_if: "ALL_SUCCESS"
+          notebook_task:
+            notebook_path: "../bronze/notebooks/bronze_full_load.py"
+            base_parameters:
+              source_path: "s3://dbx-data-source-files/lakehouse_project/customers/"
+              table_name: "customers"
+              catalog_name: "lakehouse_project"
+              schema_name: "bronze"
+            source: "WORKSPACE"
+          timeout_seconds: 0
+          email_notifications: {}
+          webhook_notifications: {}
+
+        - task_key: load_orders_data_full
+          run_if: "ALL_SUCCESS"
+          notebook_task:
+            notebook_path: "../bronze/notebooks/bronze_full_load.py"
+            base_parameters:
+              source_path: "s3://dbx-data-source-files/lakehouse_project/orders/"
+              table_name: "orders"
+              catalog_name: "lakehouse_project"
+              schema_name: "bronze"
+            source: "WORKSPACE"
+          timeout_seconds: 0
+          email_notifications: {}
+          webhook_notifications: {}
+
+        - task_key: load_order_items_data_full
+          run_if: "ALL_SUCCESS"
+          notebook_task:
+            notebook_path: "../bronze/notebooks/bronze_full_load.py"
+            base_parameters:
+              source_path: "s3://dbx-data-source-files/lakehouse_project/order_items/"
+              table_name: "order_items"
+              catalog_name: "lakehouse_project"
+              schema_name: "bronze"
+            source: "WORKSPACE"
+          timeout_seconds: 0
+          email_notifications: {}
+          webhook_notifications: {}
+
+        - task_key: load_products_data_full
+          run_if: "ALL_SUCCESS"
+          notebook_task:
+            notebook_path: "../bronze/notebooks/bronze_full_load.py"
+            base_parameters:
+              source_path: "s3://dbx-data-source-files/lakehouse_project/products/"
+              table_name: "products"
+              catalog_name: "lakehouse_project"
+              schema_name: "bronze"
+            source: "WORKSPACE"
+          timeout_seconds: 0
+          email_notifications: {}
+          webhook_notifications: {}
+
+        - task_key: load_product_reviews_data_full
+          run_if: "ALL_SUCCESS"
+          notebook_task:
+            notebook_path: "../bronze/notebooks/bronze_full_load.py" 
+            base_parameters:
+              source_path: "s3://dbx-data-source-files/lakehouse_project/product_reviews/"
+              table_name: "product_reviews"
+              catalog_name: "lakehouse_project"
+              schema_name: "bronze"
+            source: "WORKSPACE"
+          timeout_seconds: 0
+          email_notifications: {}
+          webhook_notifications: {}
+
+      tags:
+        Project: "Lakehouse_Project"
+        ResourceClass: "serverless"
+        LoadType: "full"
+      queue:
+        enabled: true
+      parameters:
+        - name: catalog_name
+          default: "lakehouse_project"
+        - name: schema_name
+          default: "bronze"
+      environments:
+        - environment_key: "Default"
+          spec:
+            client: "2"
+      run_as:
+        service_principal_name: "6134cc4f-5177-444a-90c8-9455b4b79cf1" 
