@@ -5,6 +5,8 @@ bundle:
 sync:
   include:
     - "./bronze/notebooks/*.py"
+    - "./silver/notebooks/*.py"
+    - "./gold/notebooks/*.py"
     - "./workflows/*.json"
 
 include:
