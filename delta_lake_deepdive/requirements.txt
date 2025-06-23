@@ -1,0 +1,4 @@
+pyspark
+# Delta Lake for PySpark
+# Use a compatible version for your Spark version, e.g., 2.4.0 for Spark 3.4+
+delta-spark 
