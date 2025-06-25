@@ -1,0 +1,43 @@
+resources:
+  jobs:
+    delta_lake_deepdive_generate_mock_data:
+      name: "delta_lake_deepdive_generate_mock_data"
+      description: "Generate initial mock data for Delta Lake deep dive table. One-time run."
+      email_notifications:
+        no_alert_for_skipped_runs: false
+      webhook_notifications: {}
+      timeout_seconds: 3600
+      max_concurrent_runs: 1
+      tasks:
+        - task_key: generate_mock_data
+          run_if: "ALL_SUCCESS"
+          notebook_task:
+            notebook_path: "../notebooks/01_generate_mock_data.py"
+            base_parameters:
+              catalog_name: "demo_catalog"
+              schema_name: "demo_schema"
+              table_name: "delta_demo_table"
+            source: "WORKSPACE"
+          timeout_seconds: 0
+          email_notifications: {}
+          webhook_notifications: {}
+      tags:
+        Project: "Delta_Lake_Deepdive"
+        ResourceClass: "standard"
+        LoadType: "mock_data"
+      queue:
+        enabled: true
+      parameters:
+        - name: catalog_name
+          default: "demo_catalog"
+        - name: schema_name
+          default: "demo_schema"
+        - name: table_name
+          default: "delta_demo_table"
+      environments:
+        - environment_key: "Default"
+          spec:
+            client: "2"
+      run_as:
+        service_principal_name: "6134cc4f-5177-444a-90c8-9455b4b79cf1"
+# No schedule for one-time/manual run 

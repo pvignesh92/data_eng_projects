@@ -16,14 +16,14 @@ from delta.tables import DeltaTable
 if 'dbutils' in globals():
     dbutils.widgets.text("catalog_name", "demo_catalog", "Catalog Name")
     dbutils.widgets.text("schema_name", "demo_schema", "Schema Name")
-    dbutils.widgets.text("table_name", "mock_data", "Table Name")
+    dbutils.widgets.text("table_name", "delta_demo_table_cpy", "Table Name")
     catalog_name = dbutils.widgets.get("catalog_name")
     schema_name = dbutils.widgets.get("schema_name")
     table_name = dbutils.widgets.get("table_name")
 else:
     catalog_name = "demo_catalog"
     schema_name = "demo_schema"
-    table_name = "mock_data"
+    table_name = "delta_demo_table_cpy"
 
 # COMMAND ----------
 
@@ -82,23 +82,29 @@ def main():
     df_new.write.format("delta").mode("append").saveAsTable(full_table_name)
     print(f"Inserted 100 new rows (id {max_id+1} to {max_id+100})")
 
-    # 2. Update 100 random rows (set age=99)
+    # 2. Update 100 random rows (set age=99) using MERGE
     ids = [row.id for row in spark.table(full_table_name).orderBy(col("id")).limit(1000).collect()]
     if len(ids) >= 100:
         update_ids = random.sample(ids, 100)
-        for update_id in update_ids:
-            delta_table.update(condition=col("id") == update_id, set={"age": lit(99)})
-        print(f"Updated 100 random rows (set age=99)")
+        update_df = spark.createDataFrame([(i, 99) for i in update_ids], ["id", "age"])
+        delta_table.alias("target").merge(
+            update_df.alias("updates"),
+            "target.id = updates.id"
+        ).whenMatchedUpdate(set={"age": col("updates.age")}).execute()
+        print(f"Updated 100 random rows (set age=99) using MERGE")
     else:
         print("Not enough rows to update 100 random rows.")
 
-    # 3. Delete 100 random rows
+    # 3. Delete 100 random rows using MERGE
     ids = [row.id for row in spark.table(full_table_name).orderBy(col("id")).limit(1000).collect()]
     if len(ids) >= 100:
         delete_ids = random.sample(ids, 100)
-        for delete_id in delete_ids:
-            delta_table.delete(condition=col("id") == delete_id)
-        print(f"Deleted 100 random rows.")
+        delete_df = spark.createDataFrame([(i,) for i in delete_ids], ["id"])
+        delta_table.alias("target").merge(
+            delete_df.alias("deletes"),
+            "target.id = deletes.id"
+        ).whenMatchedDelete().execute()
+        print(f"Deleted 100 random rows using MERGE.")
     else:
         print("Not enough rows to delete 100 random rows.")
 

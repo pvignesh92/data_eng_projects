@@ -1,0 +1,46 @@
+resources:
+  jobs:
+    delta_lake_deepdive_hourly_update_insert_delete:
+      name: "delta_lake_deepdive_hourly_update_insert_delete"
+      description: "Perform hourly update, insert, and delete operations on Delta Lake deep dive table."
+      email_notifications:
+        no_alert_for_skipped_runs: false
+      webhook_notifications: {}
+      timeout_seconds: 3600
+      schedule:
+        quartz_cron_expression: "0 0 * * * ?"
+        timezone_id: "UTC"
+        pause_status: "UNPAUSED"
+      max_concurrent_runs: 1
+      tasks:
+        - task_key: hourly_update_insert_delete
+          run_if: "ALL_SUCCESS"
+          notebook_task:
+            notebook_path: "../notebooks/02_hourly_update_insert_delete.py"
+            base_parameters:
+              catalog_name: "demo_catalog"
+              schema_name: "demo_schema"
+              table_name: "delta_demo_table_cpy"
+            source: "WORKSPACE"
+          timeout_seconds: 0
+          email_notifications: {}
+          webhook_notifications: {}
+      tags:
+        Project: "Delta_Lake_Deepdive"
+        ResourceClass: "standard"
+        LoadType: "hourly_update"
+      queue:
+        enabled: true
+      parameters:
+        - name: catalog_name
+          default: "demo_catalog"
+        - name: schema_name
+          default: "demo_schema"
+        - name: table_name
+          default: "delta_demo_table_cpy"
+      environments:
+        - environment_key: "Default"
+          spec:
+            client: "2"
+      run_as:
+        service_principal_name: "6134cc4f-5177-444a-90c8-9455b4b79cf1" 

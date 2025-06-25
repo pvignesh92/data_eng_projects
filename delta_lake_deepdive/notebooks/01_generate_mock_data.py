@@ -10,10 +10,10 @@ from pyspark.sql.types import *
 
 # COMMAND ----------
 # Widgets for parameters (Databricks or fallback for local)
-if 'dbutils' in globals():
 dbutils.widgets.text("catalog_name", "demo_catalog", "Catalog Name")
 dbutils.widgets.text("schema_name", "demo_schema", "Schema Name")
-dbutils.widgets.text("table_name", "mock_data", "Table Name")
+dbutils.widgets.text("table_name", "delta_demo_table", "Table Name")
+
 catalog_name = dbutils.widgets.get("catalog_name")
 schema_name = dbutils.widgets.get("schema_name")
 table_name = dbutils.widgets.get("table_name")
@@ -86,6 +86,7 @@ def generate_mock_data(num_rows=10000):
 # COMMAND ----------
 
 def main():
+    spark = SparkSession.builder.appName("DeltaLakeMockDataGen").getOrCreate()
     rows, schema = generate_mock_data(10000)
     df = spark.createDataFrame(rows, schema)
     print(f"Generated DataFrame with {df.count()} rows and {len(df.columns)} columns.")

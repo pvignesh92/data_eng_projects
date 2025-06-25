@@ -11,14 +11,14 @@
 if 'dbutils' in globals():
     dbutils.widgets.text("catalog_name", "demo_catalog", "Catalog Name")
     dbutils.widgets.text("schema_name", "demo_schema", "Schema Name")
-    dbutils.widgets.text("table_name", "mock_data", "Table Name")
+    dbutils.widgets.text("table_name", "delta_demo_table", "Table Name")
     catalog_name = dbutils.widgets.get("catalog_name")
     schema_name = dbutils.widgets.get("schema_name")
     table_name = dbutils.widgets.get("table_name")
 else:
     catalog_name = "demo_catalog"
     schema_name = "demo_schema"
-    table_name = "mock_data"
+    table_name = "delta_demo_table"
 full_table_name = f"{catalog_name}.{schema_name}.{table_name}"
 
 -- COMMAND ----------
