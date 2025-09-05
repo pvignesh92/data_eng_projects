@@ -9,15 +9,10 @@ from delta.tables import DeltaTable
 # --- 1. Spark Session with Delta Support ---
 spark = SparkSession.builder \
     .appName("DeltaLakeDeepDiveDemo") \
-    .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
-    .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
     .getOrCreate()
 
 # --- 2. Setup Paths ---
 BASE_PATH = "./data/delta_demo_table"
-if os.path.exists(BASE_PATH):
-    shutil.rmtree(BASE_PATH)
-os.makedirs(BASE_PATH, exist_ok=True)
 
 # --- 3. Generate Mocked Data ---
 def random_name():
